@@ -29,14 +29,7 @@ def get_commit_history_and_diffs(repo_link):
         headers = {"Accept": "application/vnd.github.v3.diff",
                    "Authorization": f"Bearer {github_token}"}
         
-         # Debug statements
-        print(f"Debug: Requesting diff for commits {commit_sha1} and {commit_sha2}")
-
         response = requests.get(url, headers=headers)
-
-         # Debug statements
-        print(f"Debug: Response status code: {response.status_code}")
-        print(f"Debug: Response text: {response.text}")
 
         # Check if request was successful
         if response.status_code == 200:
