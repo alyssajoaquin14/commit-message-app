@@ -62,44 +62,22 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-               # {"role": "system", "content": "You are a commit message assistant."},
+                {"role": "system", "content": "You are a commit message assistant. Generate one short and one detailed commit message."},
                 {"role": "user", "content": f"{prompt}\n"}
-            ],
-            functions=[
-                {
-                    "name": "new_commit_messages",
-                    "description": "Create a new short commit message and detailed commit message.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "short_message": {
-                                "type": "string",
-                                "description": "A short commit message"
-                            },
-                            "detailed_message": {
-                                "type": "string",
-                                "description": "A detailed commit message"
-                            },
-                        },
-                        "required": ["short_message", "detailed_message"],
-                    },
-                }
-
-            ],
-            function_call={"auto"}
+            ]
         )
         # load as a JSON object
-        json_response = json.loads(response.choices[0].message.function_call.arguments)
+        #json_response = json.loads(response.choices[0].message.function_call.arguments)
 
         #json list
-        json_commit_messages.append(json_response)
+        #json_commit_messages.append(json_response)
 
-        #generated_better_message = response.choices[0].message.content.strip()
+        generated_better_message = response.choices[0].message.content.strip()
             
-        #llm_commit_messages.append(generated_better_message)
+        llm_commit_messages.append(generated_better_message)
 
     
-    return json_commit_messages
+    return llm_commit_messages
 
     
 def main():
