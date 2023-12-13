@@ -4,6 +4,7 @@ import openai
 from github import Github
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
+correct_password = st.secrets["password"]
 
 def get_commit_history_and_diffs(repo_link):
     # Extract username and repo name from link
@@ -69,51 +70,34 @@ def generate_better_commit_messages(original_commit_messages, diffs):
     
     return llm_commit_messages
 
-def check_password():
-    # Returns True if correct password 
-     def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
-        
-        # Return True if the passward is validated.
-        if st.session_state.get("password_correct", False):
-            return True
-        
-        # Show input for password.
-        st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-        )
-        if "password_correct" in st.session_state:
-            st.error("😕 Password incorrect")
-        return False
-
 
 def main():
 
-    if not check_password():
-        st.stop()
+    password = st.text_input("Enter the password:", type="password")
 
-    st.title("Github Commit Message Generator")
+    if password == correct_password:
+         
+        st.success("Correct password! Access granted.")
 
-    repo_link = st.text_input("Enter Github repo link")
+        st.title("Github Commit Message Generator")
 
-    if st.button("Generate better commit messages"):
-        commits_info, diffs = get_commit_history_and_diffs(repo_link)
-        # separate messages from the info
-        original_commit_messages = [commit_info[1] for commit_info in commits_info]
-        
-        better_commit_messages = generate_better_commit_messages(original_commit_messages, diffs)
-        col1, col2 = st.columns(2)
-        for i in range(min(len(original_commit_messages), len(better_commit_messages))):
-            with col1:
-                st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
-            with col2:
-                st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
+        repo_link = st.text_input("Enter Github repo link")
 
+        if st.button("Generate better commit messages"):
+            commits_info, diffs = get_commit_history_and_diffs(repo_link)
+            # separate messages from the info
+            original_commit_messages = [commit_info[1] for commit_info in commits_info]
+            
+            better_commit_messages = generate_better_commit_messages(original_commit_messages, diffs)
+            col1, col2 = st.columns(2)
+            for i in range(min(len(original_commit_messages), len(better_commit_messages))):
+                with col1:
+                    st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
+                with col2:
+                    st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
+    
+    else:
+         st.error("Incorrect password. Please try again.")
 
 if __name__ == "__main__":
     main()
