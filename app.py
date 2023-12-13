@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
 import openai
+import json
 from github import Github
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -51,26 +52,54 @@ def extract_username_and_repo(repo_link):
 
 def generate_better_commit_messages(original_commit_messages, diffs):
     llm_commit_messages = []
+    json_commit_messages = []
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
         prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
 
-        # Generate new commit message
+        # call model with user query and functions
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a commit message assistant."},
+               # {"role": "system", "content": "You are a commit message assistant."},
                 {"role": "user", "content": f"{prompt}\n"}
-            ]
+            ],
+            functions=[
+                {
+                    "name": "new_commit_messages",
+                    "description": "Create a new short commit message and detailed commit message.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "short_message": {
+                                "type": "string",
+                                "description": "A short commit message"
+                            },
+                            "detailed_message": {
+                                "type": "string",
+                                "description": "A detailed commit message"
+                            },
+                        },
+                        "required": ["short_message", "detailed_message"],
+                    },
+                }
+
+            ],
+            function_call={"auto"}
         )
+        # load as a JSON object
+        json_response = json.loads(response.choices[0].message.function_call.arguments)
+
+        #json list
+        json_commit_messages.append(json_response)
+
+        #generated_better_message = response.choices[0].message.content.strip()
             
-        generated_better_message = response.choices[0].message.content.strip()
-            
-        llm_commit_messages.append(generated_better_message)
+        #llm_commit_messages.append(generated_better_message)
 
     
-    return llm_commit_messages
+    return json_commit_messages
 
     
 def main():
