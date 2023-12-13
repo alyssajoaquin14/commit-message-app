@@ -98,9 +98,6 @@ def main():
                     with col2:
                         st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
         
-        elif password == "":
-            pass
-        
         else:
             st.error("Incorrect password. Please try again.")
 
