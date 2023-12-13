@@ -4,13 +4,13 @@ import openai
 from github import Github
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-correct_password = st.secrets["password"]
+github_token = st.secrets["token"]
 
 def get_commit_history_and_diffs(repo_link):
     # Extract username and repo name from link
     username, repo_name = extract_username_and_repo(repo_link)
 
-    g = Github()
+    g = Github(github_token)
 
     # Get repository
     repo = g.get_repo(f"{username}/{repo_name}")
@@ -70,7 +70,9 @@ def generate_better_commit_messages(original_commit_messages, diffs):
     
     return llm_commit_messages
 
-def display_messages():
+    
+def main():
+   
     st.title("Github Commit Message Generator")
 
     repo_link = st.text_input("Enter Github repo link")
@@ -88,19 +90,6 @@ def display_messages():
             with col2:
                 st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
 
-def main():
 
-    display_messages()
-    #password = st.sidebar.text_input("Enter the password:", type="password")
-    """
-    if st.sidebar.button("Submit"):
-        if password == correct_password:
-            st.success("Correct password! Access granted.")
-
-            display_messages()
-        
-        else:
-            st.error("Incorrect password. Please try again.")
-    """
 if __name__ == "__main__":
     main()
