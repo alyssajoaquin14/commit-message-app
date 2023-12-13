@@ -26,7 +26,8 @@ def get_commit_history_and_diffs(repo_link):
 
         # Make request to GitHub REST API to get diff
         url = f"https://api.github.com/repos/{username}/{repo_name}/compare/{commit_sha1}...{commit_sha2}"
-        headers = {"Accept": "application/vnd.github.v3.diff"}
+        headers = {"Accept": "application/vnd.github.v3.diff",
+                   "Authorization": f"Bearer {github_token}"}
         response = requests.get(url, headers=headers)
 
         # Check if request was successful
