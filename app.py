@@ -70,33 +70,33 @@ def generate_better_commit_messages(original_commit_messages, diffs):
     
     return llm_commit_messages
 
+def display_messages():
+    st.title("Github Commit Message Generator")
+
+    repo_link = st.text_input("Enter Github repo link")
+
+    if st.button("Generate better commit messages"):
+        commits_info, diffs = get_commit_history_and_diffs(repo_link)
+        # separate messages from the info
+        original_commit_messages = [commit_info[1] for commit_info in commits_info]
+                
+        better_commit_messages = generate_better_commit_messages(original_commit_messages, diffs)
+        col1, col2 = st.columns(2)
+        for i in range(min(len(original_commit_messages), len(better_commit_messages))):
+            with col1:
+                st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
+            with col2:
+                st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
 
 def main():
 
-    password = st.text_input("Enter the password:", type="password")
+    password = st.sidebar.text_input("Enter the password:", type="password")
 
-    if st.button("Submit"):
-
+    if st.sidebar.button("Submit"):
         if password == correct_password:
-            
             st.success("Correct password! Access granted.")
 
-            st.title("Github Commit Message Generator")
-
-            repo_link = st.text_input("Enter Github repo link")
-
-            if st.button("Generate better commit messages"):
-                commits_info, diffs = get_commit_history_and_diffs(repo_link)
-                # separate messages from the info
-                original_commit_messages = [commit_info[1] for commit_info in commits_info]
-                
-                better_commit_messages = generate_better_commit_messages(original_commit_messages, diffs)
-                col1, col2 = st.columns(2)
-                for i in range(min(len(original_commit_messages), len(better_commit_messages))):
-                    with col1:
-                        st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
-                    with col2:
-                        st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
+            display_messages()
         
         else:
             st.error("Incorrect password. Please try again.")
