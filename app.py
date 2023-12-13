@@ -90,8 +90,9 @@ def display_messages():
 
 def main():
 
-    password = st.sidebar.text_input("Enter the password:", type="password")
-
+    display_messages()
+    #password = st.sidebar.text_input("Enter the password:", type="password")
+    """
     if st.sidebar.button("Submit"):
         if password == correct_password:
             st.success("Correct password! Access granted.")
@@ -100,6 +101,6 @@ def main():
         
         else:
             st.error("Incorrect password. Please try again.")
-
+    """
 if __name__ == "__main__":
     main()
