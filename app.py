@@ -72,13 +72,17 @@ def generate_better_commit_messages(original_commit_messages, diffs):
                     "parameters": {
                         "type": "object",
                         "properties": {
+                            "original_message": {
+                                "type": "string",
+                                "description": "The original commit message"
+                            },
                             "short_message": {
                                 "type": "string",
-                                "description": "A short commit message"
+                                "description": "An improved short commit message"
                             },
                             "detailed_message": {
                                 "type": "string",
-                                "description": "A detailed commit message"
+                                "description": "An improved detailed commit message"
                             }
                         },
                         "required": ["short_message", "detailed_message"]
@@ -89,8 +93,9 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         )
         # load as a JSON object
         json_response = json.loads(response.choices[0].message.function_call.arguments)
+        
         st.json(json_response)
-
+        
         #json list
         #json_commit_messages.append(json_response)
 
