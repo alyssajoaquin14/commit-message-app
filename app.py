@@ -56,7 +56,7 @@ def generate_better_commit_messages(original_commit_messages, diffs):
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
-        prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
+        prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message and make present tense:"
 
         # call model with user query and functions
         response = openai.chat.completions.create(
