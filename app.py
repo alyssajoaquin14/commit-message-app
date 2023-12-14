@@ -62,7 +62,7 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a commit message assistant. Generate one short and one detailed commit message."},
+                {"role": "system", "content": "You are a commit message assistant who adheres to Git Commit Best Practices. Generate one short and one detailed commit message."},
                 {"role": "user", "content": f"{prompt}\n"}
             ],
             functions=[
@@ -78,11 +78,11 @@ def generate_better_commit_messages(original_commit_messages, diffs):
                             },
                             "short_message": {
                                 "type": "string",
-                                "description": "An improved short commit message in present tense"
+                                "description": "An improved short commit message"
                             },
                             "detailed_message": {
                                 "type": "string",
-                                "description": "An improved detailed commit message in present tense"
+                                "description": "An improved detailed commit message"
                             }
                         },
                         "required": ["short_message", "detailed_message"]
