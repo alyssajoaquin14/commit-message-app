@@ -51,8 +51,8 @@ def extract_username_and_repo(repo_link):
 
 
 def generate_better_commit_messages(original_commit_messages, diffs):
-    llm_commit_messages = []
-    json_commit_messages = []
+    #llm_commit_messages = []
+    #json_commit_messages = []
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
@@ -64,20 +64,42 @@ def generate_better_commit_messages(original_commit_messages, diffs):
             messages=[
                 {"role": "system", "content": "You are a commit message assistant. Generate one short and one detailed commit message."},
                 {"role": "user", "content": f"{prompt}\n"}
-            ]
+            ],
+            functions=[
+                {
+                    "name": "new_commit_messages",
+                    "description": "List of commit messages.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "short_message": {
+                                "type": "string",
+                                "description": "A short commit message"
+                            },
+                            "detailed_message": {
+                                "type": "string",
+                                "description": "A detailed commit message"
+                            }
+                        },
+                        "required": ["short_message", "detailed_message"]
+                    }
+                }
+            ],
+            function_call={"name": "new_commit_messages"}
         )
         # load as a JSON object
-        #json_response = json.loads(response.choices[0].message.function_call.arguments)
+        json_response = json.loads(response.choices[0].message.function_call.arguments)
+        st.json(json_response)
 
         #json list
         #json_commit_messages.append(json_response)
 
-        generated_better_message = response.choices[0].message.content.strip()
+        #generated_better_message = response.choices[0].message.content.strip()
             
-        llm_commit_messages.append(generated_better_message)
+        #llm_commit_messages.append(generated_better_message)
 
     
-    return llm_commit_messages
+    #return llm_commit_messages
 
     
 def main():
@@ -94,12 +116,12 @@ def main():
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
             better_commit_messages = generate_better_commit_messages(original_commit_messages, diffs)
-            col1, col2 = st.columns(2)
-            for i in range(min(len(original_commit_messages), len(better_commit_messages))):
-                with col1:
-                    st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
-                with col2:
-                    st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
+            #col1, col2 = st.columns(2)
+            #for i in range(min(len(original_commit_messages), len(better_commit_messages))):
+            #   with col1:
+            #      st.write(f"Original Commit Message: {original_commit_messages[i]}\n")
+            # with col2:
+            #    st.write(f"Generated Commit Messages: {better_commit_messages[i]}\n")
 
 
 if __name__ == "__main__":
