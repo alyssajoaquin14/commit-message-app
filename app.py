@@ -56,13 +56,13 @@ def generate_better_commit_messages(original_commit_messages, diffs):
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
-        prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message and make present tense:"
+        prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
 
         # call model with user query and functions
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a commit message assistant. Generate one short and one detailed commit message."},
+                {"role": "system", "content": "You are a commit message assistant. Generate one short and one detailed commit message, both in present tense."},
                 {"role": "user", "content": f"{prompt}\n"}
             ],
             functions=[
