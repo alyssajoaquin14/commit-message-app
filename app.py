@@ -121,7 +121,8 @@ def main():
     if st.session_state.button_state == "enabled":
         generate_button_enabled = st.button("Generate better commit messages", key="generate_button")
     else:
-        st.text("Generating messages. Please wait...")
+        st.markdown("### Generating messages. Please wait...")
+        generate_button_enabled = False
 
     if generate_button_enabled:
         # disable button
