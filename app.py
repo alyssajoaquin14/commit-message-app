@@ -117,16 +117,13 @@ def main():
     if "button_state" not in st.session_state:
         st.session_state.button_state = "enabled"
 
-    # enable or disable button based on session state
-    if st.session_state.button_state == "enabled":
-        generate_button_enabled = st.button("Generate better commit messages", key="generate_button")
-    else:
-        st.button("Generating messages. Please wait...", key="generate_button_disabled", on_click=None, help="Please Wait")
-        generate_button_enabled = False
+     # Enable or disable the button based on the session state
+    generate_button_enabled = st.button("Generate better commit messages", key="generate_button", on_click=None)
 
     if generate_button_enabled:
         # disable button
         st.session_state.button_state = "disabled"
+        st.button("Generating messages. Please wait...", key="generate_button_disabled", on_click=None, help="Please Wait")
 
         with st.spinner("Generating messages. Please wait..."):
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
