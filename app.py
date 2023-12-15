@@ -120,7 +120,7 @@ def main():
     if generate_button_enabled:
         # disable button
         button_placeholder.empty()
-        button_placeholder.button("Loading...", key="generate_button_disabled", on_click=None, help="Please Wait", disabled=True)
+        button_placeholder.button("Loading...", key="generate_button_disabled", help="Please Wait", disabled=True)
 
         with st.spinner("Generating messages. Please wait..."):
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
