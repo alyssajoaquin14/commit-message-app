@@ -113,17 +113,12 @@ def main():
 
     repo_link = st.text_input("Enter Github repo link")
 
-    # initialize session state
-    if "button_state" not in st.session_state:
-        st.session_state.button_state = "enabled"
-
-     # Enable or disable the button based on the session state
-    generate_button_enabled = st.button("Generate better commit messages", key="generate_button", on_click=None)
-
-    if generate_button_enabled:
+    placeholder = st.empty()
+    btn = placeholder.button("Generate better commit messages", disabled=False, key="1")
+    
+    if btn:
         # disable button
-        st.session_state.button_state = "disabled"
-        st.button("Generating messages. Please wait...", key="generate_button_disabled", on_click=None, help="Please Wait")
+        placeholder.button("Generate better commit messages", disabled=True, key="2" )
 
         with st.spinner("Generating messages. Please wait..."):
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
@@ -133,7 +128,9 @@ def main():
             generate_better_commit_messages(original_commit_messages, diffs)
             
         # re-enable button
-        st.session_state.button_state = "enabled"
+        placeholder.button("Generate better commit messages", disabled=False, key="3")
+        placeholder.empty()
+        st.experimental_rerun()
 
 
 if __name__ == "__main__":
