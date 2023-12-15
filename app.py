@@ -129,7 +129,7 @@ def main():
             
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
-        placeholder.empty()
+        
 
 
 if __name__ == "__main__":
