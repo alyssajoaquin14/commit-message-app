@@ -51,7 +51,7 @@ def extract_username_and_repo(repo_link):
 
 
 def generate_better_commit_messages(original_commit_messages, diffs):
-
+    generated_detailed_messages = []
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
         prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
@@ -93,7 +93,22 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         json_response = json.loads(response.choices[0].message.function_call.arguments)
         # write to streamlit app
         st.json(json_response)
-        
+
+        # append detailed message to list
+        generated_detailed_messages.append(json_response["detailed_message"])
+    
+    return generated_detailed_messages
+
+
+def udpate_commit_messages(g, repo_owner, repo_name, commit_sha, new_message):
+    repo = g.get_repo(f"{repo_owner}/{repo_name}")
+
+    # get the commit
+    commit = repo.get_commit(sha=commit_sha)
+
+    # update commit message
+    commit.edit(message=new_message)
+
 
 def main():
    
@@ -104,6 +119,9 @@ def main():
     placeholder = st.empty()
     btn = placeholder.button("Generate better commit messages", disabled=False, key="1")
     
+    update_button_placeholder = st.empty()
+    
+    # if generate button
     if btn:
         # disable button
         placeholder.button("Generate better commit messages", disabled=True, key="2" )
@@ -113,11 +131,35 @@ def main():
             # separate messages from the info
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
-            generate_better_commit_messages(original_commit_messages, diffs)
+            generated_messages = generate_better_commit_messages(original_commit_messages, diffs)
             
+            generate_button_clicked = True
+            editbtn = update_button_placeholder.button("Change commit messages", disabled = not generate_button_clicked, key="4")
+        
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
-        
+    
+    # if editbtn
+    if editbtn:
+        update_button_placeholder.button("Change commit messages", disabled=True, key="5")
+        with st.spinner("Updating commit messages. Please wait..."):
+            updated_commit_messages = generated_messages
+            
+            # Integrate github API object
+            g = Github(github_token)
+
+            # fetch commit history and diffs again
+            commits_info, diffs = get_commit_history_and_diffs(repo_link)
+
+            # get username and repo name
+            username, repo_name = extract_username_and_repo(repo_link)
+
+            # Iterate over commits and update messages
+            for i, commits_info in enumerate(commits_info):
+                commit_sha = commits_info[0]
+                new_message = updated_commit_messages[i]
+                updated_commit_messages(g, username, repo_name, commit_sha, new_message)
+
 
 if __name__ == "__main__":
     main()
