@@ -100,7 +100,7 @@ def generate_better_commit_messages(original_commit_messages, diffs):
     return generated_detailed_messages
 
 
-def udpate_commit_messages(g, repo_owner, repo_name, commit_sha, new_message):
+def update_commit_messages(g, repo_owner, repo_name, commit_sha, new_message):
     repo = g.get_repo(f"{repo_owner}/{repo_name}")
 
     # get the commit
@@ -120,6 +120,8 @@ def main():
     btn = placeholder.button("Generate better commit messages", disabled=False, key="1")
     
     update_button_placeholder = st.empty()
+
+    editbtn = False
     
     # if generate button
     if btn:
@@ -155,10 +157,10 @@ def main():
             username, repo_name = extract_username_and_repo(repo_link)
 
             # Iterate over commits and update messages
-            for i, commits_info in enumerate(commits_info):
-                commit_sha = commits_info[0]
+            for i, commit_info in enumerate(commits_info):
+                commit_sha = commit_info[0]
                 new_message = updated_commit_messages[i]
-                updated_commit_messages(g, username, repo_name, commit_sha, new_message)
+                update_commit_messages(g, username, repo_name, commit_sha, new_message)
 
 
 if __name__ == "__main__":
