@@ -160,7 +160,7 @@ def main():
             for i, commit_info in enumerate(commits_info):
                 commit_sha = commit_info[0]
                 new_message = updated_commit_messages[i]
-                print(f"Updating commit {commit_sha} with new message: {new_message}")
+                st.write(f"Updating commit {commit_sha} with new message: {new_message}")
                 update_commit_messages(g, username, repo_name, commit_sha, new_message)
 
 
