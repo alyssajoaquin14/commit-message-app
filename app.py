@@ -135,8 +135,8 @@ def main():
                     
             generated_messages = generate_better_commit_messages(original_commit_messages, diffs)
             
-            generate_button_clicked = True
-            editbtn = update_button_placeholder.button("Change commit messages", disabled = not generate_button_clicked, key="4")
+        generate_button_clicked = True
+        editbtn = update_button_placeholder.button("Change commit messages", disabled = not generate_button_clicked, key="4")
         
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
@@ -162,6 +162,9 @@ def main():
                 new_message = updated_commit_messages[i]
                 st.write(f"Updating commit {commit_sha} with new message: {new_message}")
                 update_commit_messages(g, username, repo_name, commit_sha, new_message)
+
+            # Display a success message in the Streamlit app after the update is complete
+            st.success("Commit messages updated successfully!")
 
 
 if __name__ == "__main__":
