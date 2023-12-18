@@ -134,7 +134,8 @@ def main():
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
             generated_messages = generate_better_commit_messages(original_commit_messages, diffs)
-            
+
+        st.write("exited spinner")    
         generate_button_clicked = True
         editbtn = update_button_placeholder.button("Change commit messages", disabled = not generate_button_clicked, key="4")
         
@@ -143,6 +144,7 @@ def main():
     
     # if editbtn
     if editbtn:
+        st.write("Edit button clicked")
         update_button_placeholder.button("Change commit messages", disabled=True, key="5")
         with st.spinner("Updating commit messages. Please wait..."):
             updated_commit_messages = generated_messages
