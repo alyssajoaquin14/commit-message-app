@@ -111,13 +111,13 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     repo = g.get_repo(f"{username}/{repo_name}")
 
     # get the commit
-    commit = repo.get_commit(sha=commit_sha)
+    commit = repo.get_commit(sha=str(commit_sha))
 
     # get tree associated with commit
-    commit_tree = repo.get_git_tree(commit_sha)
+    commit_tree = repo.get_git_tree(str(commit_sha))
 
     # get parent commit(s)
-    parents = [repo.get_git_commit(sha=parent_sha) for parent_sha in commit.parents]
+    parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in commit.parents]
 
     # create new commit with new message
     repo.create_git_commit(
@@ -136,7 +136,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
 
     # update reference to point to new commit
     repo.get_git_ref(f"heads/{repo.default_branch}").edit(
-        sha=commit, force=True
+        sha=str(commit_sha), force=True
     )
 
 
