@@ -118,6 +118,9 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
 
     # get tree associated with commit
     commit_tree = repo.get_git_tree(str(commit_sha))
+    st.write("Parent SHA values:")
+    for parent_sha in commit.parents:
+        st.write(parent_sha)
 
     # get parent commit(s)
     parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in commit.parents]
