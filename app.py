@@ -50,10 +50,14 @@ def extract_username_and_repo(repo_link):
     return username, repo_name
 
 
-def generate_better_commit_messages(original_commit_messages, diffs):
-    generated_detailed_messages = []
+def generate_better_commit_messages(g, repo_link, commits_info, diffs):
+    #generated_detailed_messages = []
+    # separate messages from the info
+    original_commit_messages = [commit_info[1] for commit_info in commits_info]
+
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
+        commit_sha = commits_info[i][0]
         prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
 
         # call model with user query and functions
@@ -95,13 +99,17 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         st.json(json_response)
 
         # append detailed message to list
-        generated_detailed_messages.append(json_response["detailed_message"])
+        #generated_detailed_messages.append(json_response["detailed_message"])
+
+        # update commit message
+        update_commit_messages(g, repo_link, commit_sha, json_response["detailed_message"])        
     
-    return generated_detailed_messages
 
 
-def update_commit_messages(g, repo_owner, repo_name, commit_sha, new_message):
-    repo = g.get_repo(f"{repo_owner}/{repo_name}")
+def update_commit_messages(g, repo_link, commit_sha, new_message):
+    username, repo_name = extract_username_and_repo(repo_link)
+    
+    repo = g.get_repo(f"{username}/{repo_name}")
 
     # get the commit
     commit = repo.get_commit(sha=commit_sha)
@@ -119,9 +127,6 @@ def main():
     placeholder = st.empty()
     btn = placeholder.button("Generate better commit messages", disabled=False, key="1")
     
-    update_button_placeholder = st.empty()
-
-    editbtn = False
     
     # if generate button
     if btn:
@@ -129,45 +134,20 @@ def main():
         placeholder.button("Generate better commit messages", disabled=True, key="2" )
 
         with st.spinner("Generating messages. Please wait..."):
+             # Integrate github API object
+            g = Github(github_token)
+
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
             # separate messages from the info
-            original_commit_messages = [commit_info[1] for commit_info in commits_info]
+            #original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
-            generated_messages = generate_better_commit_messages(original_commit_messages, diffs)
+            generate_better_commit_messages(g, repo_link, commits_info, diffs)
 
-        st.write("exited spinner")    
-        generate_button_clicked = True
-        editbtn = update_button_placeholder.button("Change commit messages", disabled = not generate_button_clicked, key="4")
-        
+        st.write("exited spinner") 
+        st.succes("Commit messages updated successfully!")   
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
     
-    # if editbtn
-    if editbtn:
-        st.write("Edit button clicked")
-        update_button_placeholder.button("Change commit messages", disabled=True, key="5")
-        with st.spinner("Updating commit messages. Please wait..."):
-            updated_commit_messages = generated_messages
-            
-            # Integrate github API object
-            g = Github(github_token)
-
-            # fetch commit history and diffs again
-            commits_info, diffs = get_commit_history_and_diffs(repo_link)
-
-            # get username and repo name
-            username, repo_name = extract_username_and_repo(repo_link)
-
-            # Iterate over commits and update messages
-            for i, commit_info in enumerate(commits_info):
-                commit_sha = commit_info[0]
-                new_message = updated_commit_messages[i]
-                st.write(f"Updating commit {commit_sha} with new message: {new_message}")
-                update_commit_messages(g, username, repo_name, commit_sha, new_message)
-
-            # Display a success message in the Streamlit app after the update is complete
-            st.success("Commit messages updated successfully!")
-
 
 if __name__ == "__main__":
     main()
