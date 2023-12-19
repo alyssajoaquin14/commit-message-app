@@ -107,15 +107,31 @@ def generate_better_commit_messages(g, repo_link, commits_info, diffs):
 
 
 def update_commit_messages(g, repo_link, commit_sha, new_message):
-    username, repo_name = extract_username_and_repo(repo_link)
-    
+    username, repo_name = extract_username_and_repo(repo_link) 
     repo = g.get_repo(f"{username}/{repo_name}")
 
     # get the commit
     commit = repo.get_commit(sha=commit_sha)
 
-    # update commit message
-    commit.edit(message=new_message)
+    # create new commit with new message
+    repo.create_git_commit(
+        message=new_message,
+        author={
+            "name": commit.commit.author.name,
+            "email": commit.commit.author.email,
+        },
+        commiter={
+            "name": commit.commit.commiter.name,
+            "email": commit.commit.commiter.email,
+        },
+        tree=commit.commit.tree.sha,
+        parents=[commit.sha],
+    )
+
+    # update reference to point to new commit
+    repo.get_git_ref(f"heads/{repo.default_branch}").edit(
+        sha=commit, force=True
+    )
 
 
 def main():
@@ -144,7 +160,7 @@ def main():
             generate_better_commit_messages(g, repo_link, commits_info, diffs)
 
         st.write("exited spinner") 
-        st.succes("Commit messages updated successfully!")   
+        st.success("Commit messages updated successfully!")   
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
     
