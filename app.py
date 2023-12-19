@@ -125,16 +125,17 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
 
     # get parent commit(s)
     parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in parent_shas]
-    
+    author_date = commit.commit.author.date.strftime('%Y-%m-%dT%H:%M:%SZ')
     author = InputGitAuthor(
         name=commit.commit.author.name, 
         email=commit.commit.author.email, 
-        date=str(commit.commit.author.date)
+        date=author_date
     )
+    committer_date = commit.commit.committer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
     commiter = InputGitAuthor(
         name=commit.commit.committer.name,
         email=commit.commit.committer.email,
-        date=str(commit.commit.committer.date)
+        date=committer_date
     )
     # create new commit with new message
     repo.create_git_commit(
