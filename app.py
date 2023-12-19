@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 import openai
 import json
-from github import Github
+from github import Github, InputGitAuthor
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 github_token = st.secrets["token"]
@@ -126,10 +126,15 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     # get parent commit(s)
     parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in parent_shas]
     
+    author = InputGitAuthor(
+        name=commit.commit.author.name, 
+        email=commit.commit.author.email, 
+        date=commit.commit.author.date
+    )
     # create new commit with new message
     repo.create_git_commit(
         message=new_message,
-        author=commit.commit.author,
+        author=author,
         committer=commit.commit.committer,
         tree=commit_tree,
         parents=parents,
