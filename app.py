@@ -109,9 +109,12 @@ def generate_better_commit_messages(g, repo_link, commits_info, diffs):
 def update_commit_messages(g, repo_link, commit_sha, new_message):
     username, repo_name = extract_username_and_repo(repo_link) 
     repo = g.get_repo(f"{username}/{repo_name}")
-
+    
+    st.write(f"Commit SHA: {commit_sha}")
     # get the commit
     commit = repo.get_commit(sha=str(commit_sha))
+    st.write(f"Commit Author: {commit.commit.author.name}")
+    st.write(f"Commit Tree SHA: {commit.commit.tree.sha}")
 
     # get tree associated with commit
     commit_tree = repo.get_git_tree(str(commit_sha))
