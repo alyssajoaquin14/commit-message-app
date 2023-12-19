@@ -140,7 +140,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     repo.create_git_commit(
         message=new_message,
         author=author,
-        committer=commiter
+        committer=commiter,
         tree=commit_tree,
         parents=parents,
     )
