@@ -129,7 +129,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     author = InputGitAuthor(
         name=commit.commit.author.name, 
         email=commit.commit.author.email, 
-        date=commit.commit.author.date
+        date=str(commit.commit.author.date)
     )
     # create new commit with new message
     repo.create_git_commit(
