@@ -120,7 +120,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
             "name": commit.commit.author.name,
             "email": commit.commit.author.email,
         },
-        commiter={
+        committer={
             "name": commit.commit.committer.name,
             "email": commit.commit.committer.email,
         },
