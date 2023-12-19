@@ -127,7 +127,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
             "name": commit.commit.committer.name,
             "email": commit.commit.committer.email,
         },
-        tree=commit_tree
+        tree=commit_tree,
         parents=[commit.sha],
     )
 
