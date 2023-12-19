@@ -113,6 +113,9 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     # get the commit
     commit = repo.get_commit(sha=commit_sha)
 
+    # get tree associated with commit
+    commit_tree = repo.get_git_tree(commit_sha)
+
     # create new commit with new message
     repo.create_git_commit(
         message=new_message,
@@ -124,7 +127,7 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
             "name": commit.commit.committer.name,
             "email": commit.commit.committer.email,
         },
-        tree=commit.commit.tree.sha,
+        tree=commit_tree
         parents=[commit.sha],
     )
 
