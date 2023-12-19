@@ -123,7 +123,18 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
         st.write(parent_sha)
 
     # get parent commit(s)
-    parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in commit.parents]
+    #parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in commit.parents]
+    parents = []
+    st.write("Parent SHA values:")
+    for parent_sha in commit.parents:
+        st.write(parent_sha)
+
+        try:
+            parent_commit = repo.get_git_commit(sha=str(parent_sha))
+        except:
+            st.write(f"Parent commit with SHA {parent_sha} not found")
+            continue
+        parents.append(parent_commit)
 
     # create new commit with new message
     repo.create_git_commit(
