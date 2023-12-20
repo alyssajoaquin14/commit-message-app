@@ -121,36 +121,11 @@ def update_commit_messages(g, repo_link, commit_sha, new_message):
     commit_tree = repo.get_git_tree(str(commit_tree_sha))
     st.write("Parent SHA values:")
    
-    parent_shas = [str(parent.sha) for parent in commit.parents]
-    st.write(parent_shas)
-
     # get parent commit(s)
+    parent_shas = [str(parent.sha) for parent in commit.parents]
     parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in parent_shas]
-    author_date = commit.commit.author.date.strftime('%Y-%m-%dT%H:%M:%SZ')
-    author = InputGitAuthor(
-        name=commit.commit.author.name, 
-        email=commit.commit.author.email, 
-        date=author_date
-    )
-    committer_date = commit.commit.committer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
-    commiter = InputGitAuthor(
-        name=commit.commit.committer.name,
-        email=commit.commit.committer.email,
-        date=committer_date
-    )
-    # create new commit with new message
-    repo.create_git_commit(
-        message=new_message,
-        author=author,
-        committer=commiter,
-        tree=commit_tree,
-        parents=parents,
-    )
 
-    # update reference to point to new commit
-    repo.get_git_ref(f"heads/{repo.default_branch}").edit(
-        sha=str(commit_sha), force=True
-    )
+    commit.edit(message=new_message,sha=commit_sha,parents=parents)
 
 
 def main():
