@@ -123,11 +123,14 @@ def main():
             # convert data to json string
             json_data_str = json.dumps(json_data, indent=2)
 
-            # output downloadable link
-            st.markdown(
-                f'<a href="data:application/json;charset=utf-8,{json_data_str}" download="output.json">Click here to download JSON</a>',
-                unsafe_allow_html=True
+            # output downloadable file
+            st.download_button(
+                label="Download JSON",
+                data = json_data_str,
+                file_name="output.json",
+                mime="application/json"
             )
+            
 
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
