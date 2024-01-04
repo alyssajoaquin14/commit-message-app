@@ -51,7 +51,7 @@ def extract_username_and_repo(repo_link):
 
 
 def generate_better_commit_messages(original_commit_messages, diffs):
-
+    generated_data = []
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
         prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
@@ -91,9 +91,13 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         )
         # load as a JSON object
         json_response = json.loads(response.choices[0].message.function_call.arguments)
-        
+        # add to JSON file
+        generated_data.append(json_response)
         # write to streamlit app
         st.json(json_response)
+    
+    return generated_data
+
 
     
 def main():
@@ -114,7 +118,19 @@ def main():
             # separate messages from the info
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
-            generate_better_commit_messages(original_commit_messages, diffs)
+            json_data = generate_better_commit_messages(original_commit_messages, diffs)
+
+            # Add download button
+            download_button = st.button("Download JSON", key="download_btn")
+            if download_button:
+                # convert data to json string
+                json_data_str = json.dumps(json_data, indent=2)
+
+                # downloadable link
+                st.markdown(
+                    f'<a href="data:application/json;charset=utf-8,{json_data_str}" download="output.json">Click here to download JSON</a>',
+                    unsafe_allow_html=True
+                )
 
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
