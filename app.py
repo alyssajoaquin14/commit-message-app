@@ -105,24 +105,17 @@ def main():
     placeholder = st.empty()
     btn = placeholder.button("Generate better commit messages", disabled=False, key="1")
     
-    
-    # if generate button
     if btn:
         # disable button
         placeholder.button("Generate better commit messages", disabled=True, key="2" )
 
         with st.spinner("Generating messages. Please wait..."):
-             # Integrate github API object
-            g = Github(github_token)
-
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
             # separate messages from the info
-            #original_commit_messages = [commit_info[1] for commit_info in commits_info]
+            original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
-            generate_better_commit_messages(g, repo_link, commits_info, diffs)
+            generate_better_commit_messages(original_commit_messages, diffs)
 
-        st.write("exited spinner") 
-        st.success("Commit messages updated successfully!")   
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
     
