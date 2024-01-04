@@ -119,18 +119,15 @@ def main():
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
                     
             json_data = generate_better_commit_messages(original_commit_messages, diffs)
+            
+            # convert data to json string
+            json_data_str = json.dumps(json_data, indent=2)
 
-            # Add download button
-            download_button = st.button("Download JSON", key="download_btn")
-            if download_button:
-                # convert data to json string
-                json_data_str = json.dumps(json_data, indent=2)
-
-                # downloadable link
-                st.markdown(
-                    f'<a href="data:application/json;charset=utf-8,{json_data_str}" download="output.json">Click here to download JSON</a>',
-                    unsafe_allow_html=True
-                )
+            # output downloadable link
+            st.markdown(
+                f'<a href="data:application/json;charset=utf-8,{json_data_str}" download="output.json">Click here to download JSON</a>',
+                unsafe_allow_html=True
+            )
 
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
