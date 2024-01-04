@@ -51,12 +51,9 @@ def extract_username_and_repo(repo_link):
 
 
 def generate_better_commit_messages(original_commit_messages, diffs):
-    #llm_commit_messages = []
-    #json_commit_messages = []
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
-        commit_sha = commits_info[i][0]
         prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
 
         # call model with user query and functions
@@ -95,17 +92,8 @@ def generate_better_commit_messages(original_commit_messages, diffs):
         # load as a JSON object
         json_response = json.loads(response.choices[0].message.function_call.arguments)
         
+        # write to streamlit app
         st.json(json_response)
-        
-        #json list
-        #json_commit_messages.append(json_response)
-
-        #generated_better_message = response.choices[0].message.content.strip()
-            
-        #llm_commit_messages.append(generated_better_message)
-
-    
-    #return llm_commit_messages
 
     
 def main():
@@ -138,7 +126,5 @@ def main():
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
     
-
-
 if __name__ == "__main__":
     main()
