@@ -50,10 +50,9 @@ def extract_username_and_repo(repo_link):
     return username, repo_name
 
 
-def generate_better_commit_messages(g, repo_link, commits_info, diffs):
-    #generated_detailed_messages = []
-    # separate messages from the info
-    original_commit_messages = [commit_info[1] for commit_info in commits_info]
+def generate_better_commit_messages(original_commit_messages, diffs):
+    #llm_commit_messages = []
+    #json_commit_messages = []
 
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
@@ -95,64 +94,20 @@ def generate_better_commit_messages(g, repo_link, commits_info, diffs):
         )
         # load as a JSON object
         json_response = json.loads(response.choices[0].message.function_call.arguments)
-        # write to streamlit app
+        
         st.json(json_response)
+        
+        #json list
+        #json_commit_messages.append(json_response)
 
-        # append detailed message to list
-        #generated_detailed_messages.append(json_response["detailed_message"])
+        #generated_better_message = response.choices[0].message.content.strip()
+            
+        #llm_commit_messages.append(generated_better_message)
 
-        # update commit message
-        update_commit_messages(g, repo_link, commit_sha, json_response["detailed_message"])        
     
+    #return llm_commit_messages
 
-
-def update_commit_messages(g, repo_link, commit_sha, new_message):
-    username, repo_name = extract_username_and_repo(repo_link) 
-    repo = g.get_repo(f"{username}/{repo_name}")
     
-    st.write(f"Commit SHA: {commit_sha}")
-    # get the commit
-    commit = repo.get_commit(sha=str(commit_sha))
-    st.write(f"Commit Author: {commit.commit.author.name}")
-    st.write(f"Commit Tree SHA: {commit.commit.tree.sha}")
-
-    # get tree associated with commit
-    commit_tree_sha = commit.commit.tree.sha
-    commit_tree = repo.get_git_tree(str(commit_tree_sha))
-    st.write("Parent SHA values:")
-   
-    parent_shas = [str(parent.sha) for parent in commit.parents]
-    st.write(parent_shas)
-
-    # get parent commit(s)
-    parents = [repo.get_git_commit(sha=str(parent_sha)) for parent_sha in parent_shas]
-    author_date = commit.commit.author.date.strftime('%Y-%m-%dT%H:%M:%SZ')
-    author = InputGitAuthor(
-        name=commit.commit.author.name, 
-        email=commit.commit.author.email, 
-        date=author_date
-    )
-    committer_date = commit.commit.committer.date.strftime('%Y-%m-%dT%H:%M:%SZ')
-    commiter = InputGitAuthor(
-        name=commit.commit.committer.name,
-        email=commit.commit.committer.email,
-        date=committer_date
-    )
-    # create new commit with new message
-    repo.create_git_commit(
-        message=new_message,
-        author=author,
-        committer=commiter,
-        tree=commit_tree,
-        parents=parents,
-    )
-
-    # update reference to point to new commit
-    repo.get_git_ref(f"heads/{repo.default_branch}").edit(
-        sha=str(commit_sha), force=True
-    )
-
-
 def main():
    
     st.title("Github Commit Message Generator")
@@ -183,6 +138,7 @@ def main():
         # re-enable button
         placeholder.button("Generate better commit messages", disabled=False, key="3")
     
+
 
 if __name__ == "__main__":
     main()
