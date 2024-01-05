@@ -50,11 +50,11 @@ def extract_username_and_repo(repo_link):
     return username, repo_name
 
 
-def generate_better_commit_messages(original_commit_messages, diffs):
+def generate_better_commit_messages(original_commit_messages, commit_shas, diffs):
     generated_data = []
     for i in range(min(len(original_commit_messages), len(diffs))):
         # Construct a prompt with the original commit message and diff content
-        prompt = f"Original Commit Message: {original_commit_messages[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
+        prompt = f"Original Commit Message: {original_commit_messages[i]}\nCommit Sha: {commit_shas[i]}\nDiff:\n{diffs[i]}\nImprove the commit message:"
 
         # call model with user query and functions
         response = openai.chat.completions.create(
@@ -73,6 +73,11 @@ def generate_better_commit_messages(original_commit_messages, diffs):
                             "original_message": {
                                 "type": "string",
                                 "description": "The original commit message"
+                            },
+                            "commit_sha": {
+                                "type": "string",
+                                "description": "The associated commit SHA"
+
                             },
                             "short_message": {
                                 "type": "string",
@@ -117,8 +122,8 @@ def main():
             commits_info, diffs = get_commit_history_and_diffs(repo_link)
             # separate messages from the info
             original_commit_messages = [commit_info[1] for commit_info in commits_info]
-                    
-            json_data = generate_better_commit_messages(original_commit_messages, diffs)
+            commit_shas = [commit_sha[0] for commit_sha in commits_info]        
+            json_data = generate_better_commit_messages(original_commit_messages, commit_shas, diffs)
             
             # convert data to json string
             json_data_str = json.dumps(json_data, indent=2)
